@@ -20,12 +20,34 @@ def detail(request, id):
     tags = Tag.objects.all()
     categories = Category.objects.all()
 
-    # tag_count = Tag.objects.all().count
     context = {
         'post': post,
         'tags': tags,
         'categories': categories,
         'posts': posts,
-        # 'tag_count': tag_count
     }
     return render(request, 'single.html', context=context)
+
+def about(request):
+    return render(request, 'about.html')
+
+def stories(request, category="all"):
+    if category==None: category="all"
+    if category=="all":
+        posts = Post.objects.order_by('-id')
+        category = "All"
+    else:
+        posts = Post.objects.filter(category__title=category).order_by('-id')
+    categories = Category.objects.all()
+    context = {
+        'posts': posts,
+        'categories': categories,
+        'category': category
+    }
+    return render(request, 'stories.html', context=context)
+
+def recipes(request):
+    return render(request, 'recipes.html')
+
+def contact(request):
+    return render(request, 'contact.html')

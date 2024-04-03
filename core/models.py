@@ -18,7 +18,7 @@ class Post(models.Model):
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
-    
+
 class Category(models.Model):
     title = models.CharField(max_length=50)
     image = models.ImageField(upload_to='images/', null=True)
@@ -54,7 +54,6 @@ class Tag(models.Model):
     class Meta:
         verbose_name = "Tag"
         verbose_name_plural = "Tags"
-
 
 class Contact(models.Model):
     name = models.CharField(max_length=50)
