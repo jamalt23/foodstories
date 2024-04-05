@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from django.http import HttpRequest
 from core.models import *
+import re
 
 def home(request):
     posts = Post.objects.order_by('-id')[:4]
@@ -31,18 +33,37 @@ def detail(request, id):
 def about(request):
     return render(request, 'about.html')
 
-def stories(request, category="all"):
+def extract_param(url: str, key: str):
+    search = re.search(f"{key}=([^&]*)", url)
+    if search:
+        return search.group(1)
+
+def stories(request:HttpRequest, tag=None, category=None):
+    # tag = request.GET.get('tag')
+    # category = request.GET.get('category')
+    tag = extract_param(request.path, 'tag')
+    category = extract_param(request.path, 'category')
+    if tag==None: tag="all"
     if category==None: category="all"
-    if category=="all":
+    if tag=="all" and category=="all":
         posts = Post.objects.order_by('-id')
-        category = "All"
+    elif category!="all" and tag=="all":
+        posts = Post.objects.filter(category__title=category).order_by('-id')
+    elif tag != "all" and category=="all":
+        posts = Post.objects.order_by('-id')
+        posts = [post for post in posts if tag.title() in post.get_tags()]
     else:
         posts = Post.objects.filter(category__title=category).order_by('-id')
+        posts = [post for post in posts if tag in post.get_tags()]
+
+    # print(f"tag: {tag}, category: {category}")
+
     categories = Category.objects.all()
     context = {
         'posts': posts,
         'categories': categories,
-        'category': category
+        'category': category,
+        'tag': tag
     }
     return render(request, 'stories.html', context=context)
 

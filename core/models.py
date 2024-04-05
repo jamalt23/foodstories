@@ -7,10 +7,15 @@ class Post(models.Model):
     text = models.TextField(max_length=1000)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='posts')
     tags = models.ManyToManyField('Tag', verbose_name=("Tags"))
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)    
 
     def get_tags(cls):
-        return [tag.title for tag in list(cls.tags.all())]
+        taglist = []
+        for tag in cls.tags.all():
+            tag.title = tag.title.title()
+            tag.save()
+            taglist.append(tag.title)
+        return taglist
 
     def __str__(self):
         return self.title

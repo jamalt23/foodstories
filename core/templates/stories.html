@@ -8,14 +8,22 @@
             <div class="col-md-9 ftco-animate pb-5 text-center">
                 <h1 class="mb-3 bread">Stories</h1>
                 <p class="breadcrumbs">
-                    <span class="mr-2">
+                    <span>
                         <a href="{% url 'core:home' %}">Home <i class="ion-ios-arrow-forward"></i></a>
                     </span>
                     <span>
                         <a href="{% url 'core:stories' %}">Stories <i class="ion-ios-arrow-forward"></i></a>
                     </span>
                     <span>
-                        <a href="#">{{category}} <i class="ion-ios-arrow-forward"></i></a>
+                        {% if category != "all" and tag == "all" %}
+                        <a href="#">Category: {{category}} <i class="ion-ios-arrow-forward"></i></a>
+                        {% elif category == "all" and tag != "all" %}
+                        <a href="#">Tag: {{tag}} <i class="ion-ios-arrow-forward"></i></a>
+                        {% elif category != "all" and tag != "all" %}
+                        <a href="#">Category: {{category}}, Tag: {{tag}} <i class="ion-ios-arrow-forward"></i></a>
+                        {% else %}
+                        <a href="#">All <i class="ion-ios-arrow-forward"></i></a>
+                        {% endif %}
                     </span>
                 </p>
             </div>
