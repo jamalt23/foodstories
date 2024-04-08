@@ -1,10 +1,12 @@
 from django.db import models
+from accounts.models import User
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
     sub_title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='images/')
     text = models.TextField(max_length=1000)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', null=True)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='posts')
     tags = models.ManyToManyField('Tag', verbose_name=("Tags"))
     created_at = models.DateTimeField(auto_now_add=True)    
@@ -37,7 +39,7 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
 class Comment(models.Model):
-    author = models.CharField(max_length=50)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField(max_length=1000)
     post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
     created_at = models.DateTimeField(auto_now_add=True)
