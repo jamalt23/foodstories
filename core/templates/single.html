@@ -33,7 +33,11 @@
 
                 <div class="about-author d-flex p-4 bg-light">
                     <div class="bio mr-5">
+                        {% if post.author.profile_pic %}
                         <img style="border-radius: 50%; width:100px; height: 100px;" src="{{post.author.profile_pic.url}}" alt="Image placeholder" class="img-fluid mb-4">
+                        {% else %}
+                        <img style="border-radius: 50%; width:100px; height: 100px;" src="{% static 'images/profile.webp' %}" alt="Image placeholder" class="img-fluid mb-4">
+                        {% endif %}
                     </div>
                     <div class="desc">
                         <h3>{{post.author.username}}</h3>

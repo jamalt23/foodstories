@@ -39,8 +39,6 @@ def extract_param(url: str, key: str):
         return search.group(1)
 
 def stories(request:HttpRequest, tag=None, category=None):
-    # tag = request.GET.get('tag')
-    # category = request.GET.get('category')
     tag = extract_param(request.path, 'tag')
     category = extract_param(request.path, 'category')
     if tag==None: tag="all"
