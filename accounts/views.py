@@ -24,7 +24,9 @@ def login_auth(request):
 
 def profile(request, id):
     user = User.objects.get(id=id)
+    myposts = user.posts.order_by('-id')
     context = {
-        "user": user
+        "user": user,
+        "myposts": myposts
     }
     return render(request, 'user-profile.html', context=context)

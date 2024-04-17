@@ -24,8 +24,8 @@
                 
                 </a>
                 {% else %}
-                <li><a href="{% url 'accounts:register' %}" class="btn btn-black px-3 px-md-4 py-3 mr-3">Sign Up</a></li>
-                <li><a href="" class="btn btn-black px-3 px-md-4 py-3">Sign in</a></li>
+                    <li><a href="{% url 'accounts:register' %}" class="btn btn-black px-3 px-md-4 py-3 mr-3">Sign Up</a></li>
+                    <li><a href="{% url 'accounts:login' %}" class="btn btn-black px-3 px-md-4 py-3">Sign in</a></li>
                 {% endif %}
             </ul>
         </div>

@@ -74,6 +74,7 @@
     <section class="ftco-section ftco-no-pt">
         <div class="container">
             <div class="row">
+                {% if request.user.is_authenticated %}
                 <div class="col-lg-9">
                     <div class="row">
                         <div class="col-md-12 heading-section ftco-animate">
@@ -81,7 +82,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        {% for post in posts %}
+                        {% for post in myposts %}
                         <div class="col-md-4 ftco-animate">
                             <div class="blog-entry">
                                 <a href="{% url 'core:detail' post.id%}" class="img-2"><img src="{{post.image.url}}" class="img-fluid" alt="Colorlib Template"></a>
@@ -97,15 +98,19 @@
                         {% endfor %}
                     </div>
                 </div>
-
+                {% endif %}
+                {% if request.user.is_authenticated %}
                 <div class="col-lg-3">
                     <div class="sidebar-wrap">
                         <div class="sidebar-box p-4 about text-center ftco-animate">
                             <h2 class="heading mb-4">About Me</h2>
-                            <img src="images/author.jpg" class="img-fluid" alt="Colorlib Template">
+                            {% if request.user.profile_pic %}
+                            <img src="{{request.user.profile_pic.url}}" class="img-fluid" alt="image">
+                            {% else %}
+                            <img src="{% static 'images/profile.webp' %}" class="img-fluid" alt="image">
+                            {% endif %}
                             <div class="text pt-4">
-                                <p>Hi! My name is <strong>Cathy Deon</strong>, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics,
-                                    a large language ocean.</p>
+                                <p>{{ request.user.bio }}</p>
                             </div>
                         </div>
                         <div class="sidebar-box p-4 ftco-animate">
@@ -118,6 +123,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </section>
@@ -163,7 +169,7 @@
         <div class="container">
             <div class="row d-flex">
                 <div class="col-md-6 d-flex">
-                    <div class="img d-flex align-self-stretch" style="background-image:url(images/about.jpg);"></div>
+                    <div class="img d-flex align-self-stretch" style="background-image:url({% static 'images/about.jpg'%});"></div>
                 </div>
                 <div class="col-md-6 pl-md-5 py-5">
                     <div class="row justify-content-start pb-3">
@@ -221,9 +227,10 @@
                         <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
                         <div class="row d-flex justify-content-center mt-4 mb-4">
                             <div class="col-md-8">
-                                <form action="#" class="subscribe-form">
+                                <form action="" method="post" class="subscribe-form">
+                                    {% csrf_token %}
                                     <div class="form-group d-flex">
-                                        <input type="text" class="form-control" placeholder="Enter email address">
+                                        <input type="email" class="form-control" name="subscriber_email" placeholder="Enter email address">
                                         <input type="submit" value="Subscribe" class="submit px-3">
                                     </div>
                                 </form>
