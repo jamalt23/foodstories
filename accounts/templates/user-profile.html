@@ -19,9 +19,10 @@
                                 <p>{{user.bio}}</p>
                             </div>
                         </div>
+                        {% if user == request.user %}
                         <div class="sidebar-box ftco-animate user-profile">
 
-                            <a href="{% url 'accounts:edit-profile' %}" class="btn btn-hover-color py-2">Edit Profile</a>
+                            <a href="{% url 'accounts:edit-profile' request.user.id%}" class="btn btn-hover-color py-2">Edit Profile</a>
 
                         </div>
                         <div class="sidebar-box ftco-animate user-profile">
@@ -30,7 +31,6 @@
                         <div class="sidebar-box ftco-animate user-profile">
                             <a href="single.html" class="btn btn-hover-color py-2">Create recipe </a>
                         </div>
-                        {% if user == request.user %}
                         <div class="sidebar-box ftco-animate user-profile">
                             <form method="post" action="{% url 'accounts:log-out' %}">
                                 {% csrf_token %}
@@ -52,11 +52,16 @@
                 <div class="col-lg-9">
                     <div class="row">
                         <div class="col-md-12 heading-section ftco-animate">
-                            <h2 class="mb-4"><span>My stories and recipes</span></h2>
+                            <h2 class="mb-4"><span>{{user.first_name}} {{user.last_name}}'s stories</span></h2>
                         </div>
                     </div>
                     <div class="row">
-                        {% for post in myposts %}
+                    {% if userposts.count == 0 %}
+                        <div class="col-md-12 heading-section ftco-animate">
+                            <h3 class="mb-4"><span>No stories yet...</span></h2>
+                        </div>
+                    {% else %}
+                        {% for post in userposts %}
                         <div class="col-md-4 ftco-animate">
                             <div class="blog-entry">
                                 <a class="img-2">
@@ -78,6 +83,7 @@
                             </div>
                         </div>
                         {% endfor %}
+                    {% endif %}
                     </div>
                 </div>
 

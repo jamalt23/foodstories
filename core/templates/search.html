@@ -5,13 +5,18 @@
 
 <form action="" class="search-form" method="post">
     {% csrf_token %}
-    <div class="form-group">
+    <div class="form-group p-5">
         <span class="icon icon-search"></span>
         <input type="text" class="form-control" placeholder="Type a keyword and hit enter" name="search">
     </div>
 </form>
-<div class="row">
-{% if success %}
+{% if success is True and search is not None%}
+    <p class="text-center">Found {{postcount}} results for "{{search}}"</p>
+{% elif success is True %}
+    <p class="text-center">All posts: </p>
+{% endif %}
+<div class="row" style="width: 100%;">
+{% if success is True %}
     {% for post in posts %}
         <div class="col-md-4 ftco-animate">
             <div class="blog-entry">
@@ -28,7 +33,7 @@
         </div>
     {% endfor %}
 {% else %}
-    <p class="text-center" style="margin-left: 20px">No results found</p>
+    <p class="text-center" style="margin-left: 20px">No results found for '{{search}}'</p>
 {% endif %}
 </div>
 

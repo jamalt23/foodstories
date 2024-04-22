@@ -32,15 +32,6 @@ class RegisterForm(UserCreationForm):
         }
 
 class EditProfileForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].required = False
-        self.fields['first_name'].initial = self.instance.first_name
-        self.fields['last_name'].initial = self.instance.last_name
-        self.fields['bio'].initial = self.instance.bio
-        self.fields['profile_pic'].initial = self.instance.profile_pic
-
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'bio', 'profile_pic']

@@ -8,10 +8,16 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item active pt-1">
+                    <form action="{% url 'core:search' %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" placeholder="Search" name="search">
+                    </form>
+                </li>
                 <li class="nav-item active"><a href="{% url 'core:home' %}" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="{% url 'core:about' %}" class="nav-link">About</a></li>
                 <li class="nav-item"><a href="{% url 'core:stories'%}" class="nav-link">Stories</a></li>
-                <li class="nav-item"><a href="{% url 'core:search' %}" class="nav-link">Search</a></li>
+                {% comment %} <li class="nav-item"><a href="{% url 'core:search' %}" class="nav-link">Search</a></li> {% endcomment %}
                 <li class="nav-item"><a href="{% url 'core:contact' %}" class="nav-link">Contact</a></li>
                 {% if user.is_authenticated %}
                 <a href="{% url 'accounts:profile' request.user.id%}" class="nav-link" style="color: black; margin-top: -3px;">

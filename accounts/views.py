@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from accounts.forms import *
 from django.contrib.auth import authenticate, login
 from accounts.models import User
+from django.http import HttpRequest
+from django.views.generic import UpdateView
+from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
 
 def register(request):
     if request.method == 'POST':
@@ -24,27 +28,24 @@ def login_auth(request):
 
 def profile(request, id):
     user = User.objects.get(id=id)
-    myposts = user.posts.order_by('-id')
+    userposts = user.posts.order_by('-id')
     context = {
         "user": user,
-        "myposts": myposts
+        "userposts": userposts
     }
     return render(request, 'user-profile.html', context=context)
 
-def edit_profile(request):
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            if not request.FILES.get('profile_pic'):
-                form
-            if not request.POST.get('bio'):
-                form.cleaned_data.pop('bio')
-            if not request.POST.get('first_name'):
-                form.cleaned_data.pop('first_name')
-            if not request.POST.get('last_name'):
-                form.cleaned_data.pop('last_name')
-            
-            form.save()
-            return redirect(f'accounts:profile', id=request.user.id)
-    form = EditProfileForm()
-    return render(request, 'edit-profile.html', {'form': form})
+
+class EditProfile(UpdateView):
+    model = User
+    form_class = EditProfileForm
+    template_name = 'edit-profile.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile', kwargs={'id':self.get_object().id})
+    
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.username != self.get_object().username:
+            raise PermissionDenied
+        return super(EditProfile, self).dispatch(request, *args, **kwargs)
+

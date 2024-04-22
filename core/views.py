@@ -1,8 +1,12 @@
+import re
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from core.models import *
 from core.forms import PostForm
-import re
+from string import whitespace
+from django.core.mail import send_mail
+
+isEmpty = lambda string: all(char in whitespace for char in str(string))
 
 def home(request):
     if request.method == 'POST':
@@ -97,21 +101,19 @@ def create_post(request):
     return render(request, 'create_story.html', {'form': form})
 
 def search(request):
-    posts = Post.objects.order_by('-id')
+    POSTS = Post.objects.order_by('-id')
+    posts = POSTS
     success = True
+    search = None
     if request.method == 'POST':
-        search = request.POST.get('search')
+        search = str(request.POST.get('search')).lower()
+        if isEmpty(search): search = None
         if search:
-            posts = posts.filter(title__icontains=search)
-            if not posts:
-                posts = posts.filter(sub_title__icontains=search)
-            if not posts:
-                posts = posts.filter(category__title__icontains=search)
-            if not posts:
-                posts = posts.filter(tags__title__icontains=search)
-            if not posts:
-                posts = posts.filter(text__icontains=search)
+            posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
             if not posts:
                 success = False
-        return render(request, 'search.html', {'posts': posts, 'search': search, 'success': success})
-    return render(request, 'search.html', {'posts': posts})
+    context = {
+        'posts': posts, 'search': search,
+        'success': success, 'postcount': len(posts)
+    }
+    return render(request, 'search.html', context=context)
