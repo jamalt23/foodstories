@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<form action="" class="search-form" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <span class="icon icon-search"></span>
+        <input type="text" class="form-control" placeholder="Type a keyword and hit enter" name="search">
+    </div>
+</form>
+<div class="row">
+{% if success %}
+    {% for post in posts %}
+        <div class="col-md-4 ftco-animate">
+            <div class="blog-entry">
+                <a href="{% url 'core:detail' post.id%}" class="img-2"><img src="{{post.image.url}}" class="img-fluid"
+                                                         alt="Colorlib Template"></a>
+                <div class="text pt-3">
+                    <p class="meta d-flex"><span class="pr-3">{{post.category}}</span><span class="ml-auto pl-3">{{post.created_at |date:"M d, Y"}}</span>
+                    </p>
+                    <h3><a href="{% url 'core:detail' post.id%}">{{post.title}}</a></h3>
+                    <p class="mb-0"><a href="{% url 'core:detail' post.id%}" class="btn btn-black py-2">Read More <span
+                            class="icon-arrow_forward ml-4"></span></a></p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="text-center" style="margin-left: 20px">No results found</p>
+{% endif %}
+</div>
+
+{% endblock content %}

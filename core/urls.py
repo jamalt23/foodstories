@@ -13,7 +13,7 @@ urlpatterns = [
     path('stories/?tag=<str:tag>', stories, name="stories"),
     path('stories/?tag=<str:tag>&category=<str:category>', stories, name="stories"),
     path('stories/?category=<str:category>&tag=<str:tag>', stories, name="stories"),
-    path('recipes/', recipes, name="recipes"),
     path('contact/', contact, name="contact"),
     path('create-post/', create_post, name="create-post"),
+    path('search/', search, name="search"),
 ]

@@ -83,9 +83,6 @@ def stories(request:HttpRequest, tag=None, category=None):
     }
     return render(request, 'stories.html', context=context)
 
-def recipes(request):
-    return render(request, 'recipes.html')
-
 def contact(request):
     return render(request, 'contact.html')
 
@@ -98,3 +95,23 @@ def create_post(request):
             return redirect('core:home')
     form = PostForm()
     return render(request, 'create_story.html', {'form': form})
+
+def search(request):
+    posts = Post.objects.order_by('-id')
+    success = True
+    if request.method == 'POST':
+        search = request.POST.get('search')
+        if search:
+            posts = posts.filter(title__icontains=search)
+            if not posts:
+                posts = posts.filter(sub_title__icontains=search)
+            if not posts:
+                posts = posts.filter(category__title__icontains=search)
+            if not posts:
+                posts = posts.filter(tags__title__icontains=search)
+            if not posts:
+                posts = posts.filter(text__icontains=search)
+            if not posts:
+                success = False
+        return render(request, 'search.html', {'posts': posts, 'search': search, 'success': success})
+    return render(request, 'search.html', {'posts': posts})
