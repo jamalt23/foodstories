@@ -38,17 +38,14 @@ def detail(request, id):
         comment.save()
         return redirect('core:detail', id=id)
 
-    posts = Post.objects.order_by('-id')[:3]
-    posts = [item for item in posts if not item==post]
+    posts = [item for item in Post.objects.order_by('-id') if not item==post][:4]
 
     tags = Tag.objects.all()
     categories = Category.objects.all()
 
     context = {
-        'post': post,
-        'tags': tags,
-        'categories': categories,
-        'posts': posts
+        'post': post, 'tags': tags,
+        'categories': categories, 'posts': posts
     }
     return render(request, 'single.html', context=context)
 
@@ -76,14 +73,23 @@ def stories(request:HttpRequest, tag=None, category=None):
         posts = Post.objects.filter(category__title=category).order_by('-id')
         posts = [post for post in posts if tag in post.get_tags()]
 
-    # print(f"tag: {tag}, category: {category}")
+    POSTS = posts
+    success = True
+    search = None
+    if request.method == 'POST':
+        search = str(request.POST.get('search')).lower()
+        if isEmpty(search): search = None
+        if search:
+            posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
+            if not posts:
+                success = False
 
     categories = Category.objects.all()
     context = {
-        'posts': posts,
-        'categories': categories,
-        'category': category,
-        'tag': tag
+        'posts': posts, 'categories': categories,
+        'category': category, 'tag': tag,
+        'search': search, 'success': success,
+        'postcount': len(posts)
     }
     return render(request, 'stories.html', context=context)
 
@@ -91,6 +97,8 @@ def contact(request):
     return render(request, 'contact.html')
 
 def create_post(request):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -117,3 +125,4 @@ def search(request):
         'success': success, 'postcount': len(posts)
     }
     return render(request, 'search.html', context=context)
+

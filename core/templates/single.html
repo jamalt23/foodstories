@@ -30,17 +30,19 @@
                     {% endfor %}
                     </div>
                 </div>
-
+                
                 <div class="about-author d-flex p-4 bg-light">
+                    <a href="{% url 'accounts:profile' post.author.id %}">
                     <div class="bio mr-5">
                         {% if post.author.profile_pic %}
                         <img style="border-radius: 50%; width:100px; height: 100px;" src="{{post.author.profile_pic.url}}" alt="Image placeholder" class="img-fluid mb-4">
                         {% else %}
                         <img style="border-radius: 50%; width:100px; height: 100px;" src="{% static 'images/profile.webp' %}" alt="Image placeholder" class="img-fluid mb-4">
                         {% endif %}
-                    </div>
+                    </div></a>
                     <div class="desc">
-                        <h3>{{post.author.username}}</h3>
+                        <a href="{% url 'accounts:profile' post.author.id %}">
+                        <h3>{{post.author.username}}</h3></a>
                         <p>{{post.author.bio}}</p>
                     </div>
                 </div>
@@ -51,6 +53,7 @@
                     <ul class="comment-list">
                         {% for comment in post.comments.all %}
                         <li class="comment">
+                            <a href="{% url 'accounts:profile' comment.author.id %}">
                             <div class="vcard bio">
                                 {% if comment.author.profile_pic %}
                                 <img style="border-radius: 50%; width:70px; height: 70px;" src="{{comment.author.profile_pic.url}}" alt="">
@@ -58,8 +61,11 @@
                                 <img style="border-radius: 50%; width:70px; height: 70px;" src="{% static 'images/profile.webp' %}" alt="">
                                 {% endif %}
                             </div>
+                            </a>
                             <div class="comment-body">
+                                <a href="{% url 'accounts:profile' comment.author.id %}">
                                 <h3>{{comment.author.username}}</h3>
+                                </a>
                                 <div class="meta">{{comment.created_at}}</div>
                                 <p>{{comment.text}}</p>
                                 <!-- <p><a href="#" class="reply">Reply</a></p> -->

@@ -2,6 +2,9 @@
 {% load static %}  
 {% block content %}
 
+{% if success is True and search is not None%}
+    <p class="text-center">Found {{postcount}} results for "{{search}}"</p>
+{% elif success is True %}
 <section class="hero-wrap hero-wrap-2" style="background-image: url({% static 'images/bg_4.jpg' %});">
     <div class="overlay"></div>
     <div class="container">
@@ -31,11 +34,12 @@
         </div>
     </div>
 </section>
-
+{% endif %}
 <section class="ftco-section">
     <div class="container">
         <div class="row">
             <div class="col-lg-9">
+            {% if success is True %}
                 <div class="row">
                 {% for post in posts %}
                     <div class="col-md-4 ftco-animate">
@@ -68,6 +72,9 @@
                         </div>
                     </div>
                 </div>
+            {% else %}
+                <p class="text-center" style="margin-left: 20px">No results found for '{{search}}'</p>
+            {% endif %}
             </div>
 
             <div class="col-lg-3">
@@ -82,10 +89,11 @@
                         </div>
                     </div>
                     <div class="sidebar-box p-4 ftco-animate">
-                        <form action="#" class="search-form">
+                        <form action="" class="search-form" method="post">
+                            {% csrf_token %}
                             <div class="form-group">
                                 <span class="icon icon-search"></span>
-                                <input type="text" class="form-control" placeholder="Search">
+                                <input type="text" class="form-control" placeholder="Search" name="search">
                             </div>
                         </form>
                     </div>
