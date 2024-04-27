@@ -1,15 +1,15 @@
-from django.shortcuts import render, redirect
-from accounts.forms import *
-from django.contrib.auth import authenticate, login
 from accounts.models import User
-from django.http import HttpRequest
+from accounts.forms import *
 from django.views.generic import *
+from django.core.mail import *
 from django.contrib.auth.views import *
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.http import HttpRequest
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
-from django.core.mail import *
-import random, string
 
+# import random, string
 # def generate_random_token() -> str:
 #     return ''.join(random.sample(string.ascii_letters, 16))
 
@@ -54,7 +54,6 @@ class EditProfile(UpdateView):
             raise PermissionDenied
         return super(EditProfile, self).dispatch(request, *args, **kwargs)
 
-
 class ForgetPassword(PasswordResetView):
     form_class = ForgetPasswordForm
     template_name = 'forgot-password.html'
@@ -62,9 +61,9 @@ class ForgetPassword(PasswordResetView):
     email_template_name = "forgot-password-email.html"
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    form_class = PasswordResetConfirmForm
     template_name= "reset_password.html" 
     success_url = reverse_lazy('accounts:login')
-    form_class = PasswordResetConfirmForm
 
 # def forgot_password(request: HttpRequest):
 #     success = None

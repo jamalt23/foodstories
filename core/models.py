@@ -11,13 +11,18 @@ class Post(models.Model):
     tags = models.ManyToManyField('Tag', verbose_name=("Tags"))
     created_at = models.DateTimeField(auto_now_add=True)    
 
-    def get_tags(cls):
+    def get_tags(cls, case='title'):
         taglist = []
         for tag in cls.tags.all():
             tag.title = tag.title.title()
             tag.save()
             taglist.append(tag.title)
-        return taglist
+        if case == 'lower':
+            return [tag.lower() for tag in taglist]
+        elif case == 'upper':
+            return [tag.upper() for tag in taglist]
+        elif case == 'title':
+            return taglist
 
     def __str__(self):
         return self.title

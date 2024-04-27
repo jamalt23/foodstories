@@ -4,11 +4,10 @@ from django.http import HttpRequest
 from core.models import *
 from core.forms import PostForm
 from string import whitespace
-from django.core.mail import send_mail
 
 isEmpty = lambda string: all(char in whitespace for char in str(string))
 
-def home(request):
+def home(request: HttpRequest):
     if request.method == 'POST':
         subscriber_email = request.POST.get('subscriber_email')
         subscriber = Subscribe(email=subscriber_email)
@@ -29,7 +28,7 @@ def home(request):
     }
     return render(request, 'index.html', context=context)
 
-def detail(request, id):
+def detail(request: HttpRequest, id: int):
     post = Post.objects.get(id=id)
 
     if request.method == 'POST':
@@ -49,7 +48,7 @@ def detail(request, id):
     }
     return render(request, 'single.html', context=context)
 
-def about(request):
+def about(request: HttpRequest):
     return render(request, 'about.html')
 
 def extract_param(url: str, key: str):
@@ -57,16 +56,17 @@ def extract_param(url: str, key: str):
     if search:
         return search.group(1)
 
-def stories(request:HttpRequest, tag=None, category=None):
+def stories(request: HttpRequest, tag="all", category="all"):
     tag = extract_param(request.path, 'tag')
     category = extract_param(request.path, 'category')
-    if tag==None: tag="all"
-    if category==None: category="all"
-    if tag=="all" and category=="all":
+    if tag==None: tag='all'
+    if category==None: category='all'
+
+    if tag==category=="all":
         posts = Post.objects.order_by('-id')
-    elif category!="all" and tag=="all":
+    elif category!=tag=="all":
         posts = Post.objects.filter(category__title=category).order_by('-id')
-    elif tag != "all" and category=="all":
+    elif tag!=category=="all":
         posts = Post.objects.order_by('-id')
         posts = [post for post in posts if tag.title() in post.get_tags()]
     else:
@@ -75,14 +75,15 @@ def stories(request:HttpRequest, tag=None, category=None):
 
     POSTS = posts
     success = True
-    search = None
-    if request.method == 'POST':
-        search = str(request.POST.get('search')).lower()
-        if isEmpty(search): search = None
-        if search:
-            posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
-            if not posts:
-                success = False
+    search = request.GET.get('search')
+    print(search)
+    print(type(search))
+    if isEmpty(search): search = None
+    if search is not None:
+        search = search.lower()
+        posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
+        if not posts:
+            success = False
 
     categories = Category.objects.all()
     context = {
@@ -93,10 +94,10 @@ def stories(request:HttpRequest, tag=None, category=None):
     }
     return render(request, 'stories.html', context=context)
 
-def contact(request):
+def contact(request: HttpRequest):
     return render(request, 'contact.html')
 
-def create_post(request):
+def create_post(request: HttpRequest):
     if not request.user.is_authenticated:
         return redirect('accounts:login')
     if request.method == 'POST':
@@ -108,21 +109,21 @@ def create_post(request):
     form = PostForm()
     return render(request, 'create_story.html', {'form': form})
 
-def search(request):
-    POSTS = Post.objects.order_by('-id')
-    posts = POSTS
-    success = True
-    search = None
-    if request.method == 'POST':
-        search = str(request.POST.get('search')).lower()
-        if isEmpty(search): search = None
-        if search:
-            posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
-            if not posts:
-                success = False
-    context = {
-        'posts': posts, 'search': search,
-        'success': success, 'postcount': len(posts)
-    }
-    return render(request, 'search.html', context=context)
+# def search_view(request: HttpRequest):
+#     POSTS = Post.objects.order_by('-id')
+#     posts = POSTS
+#     success = True
+#     search = None
+#     if request.method == 'POST':
+#         search = str(request.POST.get('search')).lower()
+#         if isEmpty(search): search = None
+#         if search:
+#             posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
+#             if not posts:
+#                 success = False
+#     context = {
+#         'posts': posts, 'search': search,
+#         'success': success, 'postcount': len(posts)
+#     }
+#     return render(request, 'search.html', context=context)
 
