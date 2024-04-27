@@ -10,10 +10,9 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item active pt-1">
                     <form action="{% url 'core:stories'%}" method="get">
-                        {% comment %} {% csrf_token %} {% endcomment %}
                         <div class="form-group">
                             {% comment %} <span class="icon icon-search"></span> {% endcomment %}
-                            <input type="text" class="form-control" placeholder="Search" name="search">
+                            <input type="text" class="form-control" placeholder="Search" name="search" id="search">
                         </div>
                     </form>
                 </li>

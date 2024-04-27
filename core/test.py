@@ -1,5 +1,5 @@
-from typing import *
+import requests
 
-def hi(a: List[str]):
-    print(a)
+response = requests.get('http://127.0.0.1:8000/about/')
 
+print(response.text)

@@ -29,7 +29,7 @@
                     <h2 class="ftco-heading-2">Categories</h2>
                     <ul class="list-unstyled">
                         {% for category in categories %}
-                        <li><a href="{% url 'core:stories' category=category.title tag='all'%}" class="py-2 d-block">{{category.title}}</a></li>
+                        <li><a href="{% url 'core:stories'%}?category={{category.title}}" class="py-2 d-block">{{category.title}}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

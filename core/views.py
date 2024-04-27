@@ -1,6 +1,6 @@
 import re
 from django.shortcuts import render, redirect
-from django.http import HttpRequest
+from django.http import *
 from core.models import *
 from core.forms import PostForm
 from string import whitespace
@@ -49,19 +49,22 @@ def detail(request: HttpRequest, id: int):
     return render(request, 'single.html', context=context)
 
 def about(request: HttpRequest):
-    return render(request, 'about.html')
+    return HttpResponse('Abouasdfgasdgt')
 
 def extract_param(url: str, key: str):
     search = re.search(f"{key}=([^&]*)", url)
     if search:
         return search.group(1)
 
-def stories(request: HttpRequest, tag="all", category="all"):
-    tag = extract_param(request.path, 'tag')
-    category = extract_param(request.path, 'category')
+def stories(request: HttpRequest):
+    # tag = extract_param(request.path, 'tag')
+    # category = extract_param(request.path, 'category')
+    print(request.GET)
+    print([i for i in request.GET])
+    tag = request.GET.get('tag')
+    category = request.GET.get('category')
     if tag==None: tag='all'
     if category==None: category='all'
-
     if tag==category=="all":
         posts = Post.objects.order_by('-id')
     elif category!=tag=="all":
@@ -76,8 +79,6 @@ def stories(request: HttpRequest, tag="all", category="all"):
     POSTS = posts
     success = True
     search = request.GET.get('search')
-    print(search)
-    print(type(search))
     if isEmpty(search): search = None
     if search is not None:
         search = search.lower()
