@@ -49,7 +49,7 @@ def detail(request: HttpRequest, id: int):
     return render(request, 'single.html', context=context)
 
 def about(request: HttpRequest):
-    return HttpResponse('Abouasdfgasdgt')
+    return render(request, 'about.html')
 
 def extract_param(url: str, key: str):
     search = re.search(f"{key}=([^&]*)", url)
