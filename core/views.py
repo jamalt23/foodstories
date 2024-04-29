@@ -1,4 +1,4 @@
-import re
+import re, json
 from django.shortcuts import render, redirect
 from django.http import *
 from core.models import *
@@ -26,6 +26,7 @@ def home(request: HttpRequest):
         'categories': categories,
         'myposts': myposts
     }
+    print('\u001b[38;5;208mHello, World!\u001b[0m')
     return render(request, 'index.html', context=context)
 
 def detail(request: HttpRequest, id: int):
@@ -49,7 +50,11 @@ def detail(request: HttpRequest, id: int):
     return render(request, 'single.html', context=context)
 
 def about(request: HttpRequest):
-    return render(request, 'about.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    return render(request, 'about.html', context=context)
 
 def extract_param(url: str, key: str):
     search = re.search(f"{key}=([^&]*)", url)
@@ -96,9 +101,14 @@ def stories(request: HttpRequest):
     return render(request, 'stories.html', context=context)
 
 def contact(request: HttpRequest):
-    return render(request, 'contact.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    return render(request, 'contact.html', context=context)
 
 def create_post(request: HttpRequest):
+    categories = Category.objects.all()
     if not request.user.is_authenticated:
         return redirect('accounts:login')
     if request.method == 'POST':
@@ -108,23 +118,7 @@ def create_post(request: HttpRequest):
             form.save()
             return redirect('core:home')
     form = PostForm()
-    return render(request, 'create_story.html', {'form': form})
-
-# def search_view(request: HttpRequest):
-#     POSTS = Post.objects.order_by('-id')
-#     posts = POSTS
-#     success = True
-#     search = None
-#     if request.method == 'POST':
-#         search = str(request.POST.get('search')).lower()
-#         if isEmpty(search): search = None
-#         if search:
-#             posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
-#             if not posts:
-#                 success = False
-#     context = {
-#         'posts': posts, 'search': search,
-#         'success': success, 'postcount': len(posts)
-#     }
-#     return render(request, 'search.html', context=context)
-
+    context = {
+        'categories': categories, 'form': form
+    }
+    return render(request, 'create_story.html', context=context)

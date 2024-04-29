@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     #local apps
     'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
-
 ]
 
 MIDDLEWARE = [
@@ -148,53 +147,3 @@ EMAIL_HOST_PASSWORD = 'ngfe cglq jtke sxly'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[print('Hello World!') for i in range(100)]

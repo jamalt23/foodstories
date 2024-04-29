@@ -1,6 +1,6 @@
 from django import forms
 from accounts.models import User
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from string import whitespace
 
 isEmpty = lambda string: all(char in whitespace for char in str(string))
@@ -68,3 +68,29 @@ class PasswordResetConfirmForm(SetPasswordForm):
 
     class Meta:
         fields = ("new_password1", 'new_password2', )
+
+class ThePasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        widget = forms.PasswordInput(
+            attrs={
+                'placeholder' : 'Old password',
+                'class' : 'form-control',
+            }))
+
+    new_password1 = forms.CharField(
+        widget = forms.PasswordInput(
+            attrs={
+                'placeholder' : 'New password',
+                'class' : 'form-control',
+            }))
+
+    new_password2 = forms.CharField(
+        widget = forms.PasswordInput(
+            attrs={
+                'placeholder' : 'Re-enter new password',
+                'class' : 'form-control',
+            }))
+
+    class Meta:
+        model = User
+        fields = ("old_password", 'new_password1', 'new_password2', )

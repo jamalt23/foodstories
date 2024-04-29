@@ -13,4 +13,5 @@ urlpatterns = [
     path('log-out', LogoutView.as_view(), name='log-out'),
     path('edit-profile/<int:pk>', EditProfile.as_view(), name="edit-profile"),
     path('password-reset-confirm/<str:uidb64>/<str:token>/', CustomPasswordResetConfirmView.as_view(), name = 'password-reset-confirm'),
+    path('password-change/', CustomPasswordChangeView.as_view(), name = 'password-change'),
 ]

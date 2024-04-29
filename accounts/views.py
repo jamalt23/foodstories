@@ -1,4 +1,5 @@
 from accounts.models import User
+from core.models import *
 from accounts.forms import *
 from django.views.generic import *
 from django.core.mail import *
@@ -14,15 +15,21 @@ from django.core.exceptions import PermissionDenied
 #     return ''.join(random.sample(string.ascii_letters, 16))
 
 def register(request: HttpRequest):
+    categories = Category.objects.all()
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('accounts:login')
     form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    context = {
+        'categories': categories, 'form': form
+    }
+    return render(request, 'register.html', context=context)
 
 def login_auth(request: HttpRequest):
+    categories = Category.objects.all()
+    context = {'categories': categories}
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -30,14 +37,14 @@ def login_auth(request: HttpRequest):
         if user is not None:
             login(request, user)
             return redirect('core:home')
-    return render(request, 'login.html')
+    return render(request, 'login.html', context=context)
 
 def profile(request: HttpRequest, id: int):
     user = User.objects.get(id=id)
     userposts = user.posts.order_by('-id')
     context = {
-        "user": user,
-        "userposts": userposts
+        "user": user, "userposts": userposts,
+        'categories': Category.objects.all()
     }
     return render(request, 'user-profile.html', context=context)
 
@@ -54,36 +61,38 @@ class EditProfile(UpdateView):
             raise PermissionDenied
         return super(EditProfile, self).dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['categories'] = Category.objects.all()
+        return context
+
 class ForgetPassword(PasswordResetView):
     form_class = ForgetPasswordForm
     template_name = 'forgot-password.html'
     success_url = reverse_lazy('accounts:login')
     email_template_name = "forgot-password-email.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['categories'] = Category.objects.all()
+        return context
+
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     form_class = PasswordResetConfirmForm
     template_name= "reset_password.html" 
     success_url = reverse_lazy('accounts:login')
 
-# def forgot_password(request: HttpRequest):
-#     success = None
-#     if request.method == 'POST':
-#         userdata = request.POST.get('userdata')
-#         user = [user for user in User.objects.filter(username=userdata)]
-#         if user == []:
-#             user == [user for user in User.objects.filter(email=userdata)]
-#         if user:
-#             user = user[0]
-#             success = True
-#             EmailMessage('Password reset',
-#                     'Password reset link: https://www.localhost:8000/accounts/reset-password/'+user.username,
-#                     'foodstories657@gmail.com',
-#                     [user.email]).send()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['categories'] = Category.objects.all()
+        return context
 
-#         else:
-#             success = False
-#             return render(request, 'forgot-password.html', {'success':success})
-#     return render(request, 'forgot-password.html', {'success':success})
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'change_password.html'
+    form_class = ThePasswordChangeForm
+    success_url = reverse_lazy('accounts:login')
 
-# def success_password_request(request: HttpRequest):
-#     return render(request, 'success-password-request.html')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['categories'] = Category.objects.all()
+        return context

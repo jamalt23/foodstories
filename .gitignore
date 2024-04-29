@@ -25,7 +25,6 @@
 *.log
 *.sql
 *.sqlite
-users.json
 
 # OS generated files #
 ######################
@@ -36,3 +35,6 @@ users.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+.env
+.gitignore
