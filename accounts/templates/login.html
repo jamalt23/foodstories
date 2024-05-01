@@ -6,7 +6,12 @@
         <div class="container">
             <div class="row block-9 justify-content-center">
                 <div class="col-md-6 order-md-last d-flex">
+                    
                     <form action="" method="post" class="bg-light p-5 contact-form">
+                        {% if sent_email%}
+                    <h1>We sent you verification email!</h1>
+                    <p>Please check entered email address.</p>
+                    {% else %}
                         {% csrf_token %}
                         <a class="navbar-brand center" href="#">Stories<span>.</span></a>
                         <div class="form-group">
@@ -26,10 +31,11 @@
                             <a href="#" class="social"><i class="fa fa-facebook social-login fb-color"></i></a>
                             <a href="#" class="social"><i class="fa fa-google-plus social-login google-color"></i></a>
                         </div>
+                        {% endif%}
                     </form>
-
                 </div>
             </div>
         </div>
     </section>
+
 {% endblock %}

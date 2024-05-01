@@ -29,7 +29,7 @@
                             <a href="{% url 'core:create-post' %}" class="btn btn-hover-color py-2">Create story </a>
                         </div>
                         <div class="sidebar-box ftco-animate user-profile">
-                            <a href="single.html" class="btn btn-hover-color py-2">Create recipe </a>
+                            <a href="{% url 'accounts:password-change' %}" class="btn btn-hover-color py-2">Change password </a>
                         </div>
                         <div class="sidebar-box ftco-animate user-profile">
                             <form method="post" action="{% url 'accounts:log-out' %}">
