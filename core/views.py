@@ -1,5 +1,6 @@
 import re, json
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from django.http import *
 from core.models import *
 from core.forms import PostForm
@@ -52,7 +53,9 @@ def detail(request: HttpRequest, id: int):
 def about(request: HttpRequest):
     categories = Category.objects.all()
     context = {
-        'categories': categories
+        'categories': categories,
+        'usercount': User.objects.count(),
+        'postcount': Post.objects.count()
     }
     return render(request, 'about.html', context=context)
 
@@ -62,10 +65,6 @@ def extract_param(url: str, key: str):
         return search.group(1)
 
 def stories(request: HttpRequest):
-    # tag = extract_param(request.path, 'tag')
-    # category = extract_param(request.path, 'category')
-    print(request.GET)
-    print([i for i in request.GET])
     tag = request.GET.get('tag')
     category = request.GET.get('category')
     if tag==None: tag='all'
@@ -84,7 +83,7 @@ def stories(request: HttpRequest):
     POSTS = posts
     success = True
     search = request.GET.get('search')
-    if isEmpty(search): search = None
+    if isEmpty(search) or search == "None": search = None
     if search is not None:
         search = search.lower()
         posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
@@ -92,11 +91,15 @@ def stories(request: HttpRequest):
             success = False
 
     categories = Category.objects.all()
+    paginator = Paginator(posts, 9)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
     context = {
         'posts': posts, 'categories': categories,
         'category': category, 'tag': tag,
         'search': search, 'success': success,
-        'postcount': len(posts)
+        'postcount': len(posts), 'page': page,
+        'tags': Tag.objects.all()
     }
     return render(request, 'stories.html', context=context)
 
