@@ -3,7 +3,10 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.http import *
 from core.models import *
+from django.views.generic import *
+from django.core.exceptions import PermissionDenied
 from core.forms import PostForm
+from django.urls import reverse_lazy
 from string import whitespace
 
 isEmpty = lambda string: all(char in whitespace for char in str(string))
@@ -27,7 +30,7 @@ def home(request: HttpRequest):
         'categories': categories,
         'myposts': myposts
     }
-    print('\u001b[38;5;208mHello, World!\u001b[0m')
+
     return render(request, 'index.html', context=context)
 
 def detail(request: HttpRequest, id: int):
@@ -86,7 +89,7 @@ def stories(request: HttpRequest):
     if isEmpty(search) or search == "None": search = None
     if search is not None:
         search = search.lower()
-        posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags()]
+        posts = [post for post in POSTS if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags(case='lower')]
         if not posts:
             success = False
 
@@ -110,18 +113,43 @@ def contact(request: HttpRequest):
     }
     return render(request, 'contact.html', context=context)
 
-def create_post(request: HttpRequest):
-    categories = Category.objects.all()
-    if not request.user.is_authenticated:
-        return redirect('accounts:login')
-    if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.instance.author = request.user
-            form.save()
-            return redirect('core:home')
-    form = PostForm()
-    context = {
-        'categories': categories, 'form': form
-    }
-    return render(request, 'create_story.html', context=context)
+class CreatePost(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'create_story.html'
+    success_url = reverse_lazy('core:home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        return super(CreatePost, self).dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        return reverse_lazy('core:home')
+
+class EditPost(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'create_story.html'
+
+    def get_success_url(self):
+        return reverse_lazy('core:detail', kwargs={'id':self.get_object().id})
+    
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user != self.get_object().author:
+            raise PermissionDenied
+        return super(EditPost, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['categories'] = Category.objects.all()
+        return context

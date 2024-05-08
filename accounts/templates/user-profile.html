@@ -21,9 +21,7 @@
                         </div>
                         {% if user == request.user %}
                         <div class="sidebar-box ftco-animate user-profile">
-
                             <a href="{% url 'accounts:edit-profile' request.user.id%}" class="btn btn-hover-color py-2">Edit Profile</a>
-
                         </div>
                         <div class="sidebar-box ftco-animate user-profile">
                             <a href="{% url 'core:create-post' %}" class="btn btn-hover-color py-2">Create story </a>
@@ -40,10 +38,10 @@
                         </div>
                         {% endif %}
                         <div class="sidebar-box p-4 ftco-animate">
-                            <form action="#" class="search-form">
+                            <form action="{% url 'accounts:profile' user.id %}" class="search-form" method="get">
                                 <div class="form-group">
                                     <span class="icon icon-search"></span>
-                                    <input type="text" class="form-control" placeholder="Search">
+                                    <input type="text" value="{% if search %}{{search}}{%endif%}" class="form-control" placeholder="Search" name="search" id="search">
                                 </div>
                             </form>
                         </div>
@@ -60,7 +58,7 @@
                         <div class="col-md-12 heading-section ftco-animate">
                             <h3 class="mb-4"><span>No stories yet...</span></h2>
                         </div>
-                    {% else %}
+                    {% elif success is True %}
                         {% for post in userposts %}
                         <div class="col-md-4 ftco-animate">
                             <div class="blog-entry">
@@ -76,13 +74,22 @@
                                 <div class="text pt-3">
                                     <p class="meta d-flex"><span class="pr-3">{{post.category}}</span><span class="ml-auto pl-3">{{post.created_at |date:"M d, Y"}}</span>
                                     </p>
-                                    <h3><a href="#">{{post.title}}</a></h3>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <h3><a href="#">{{post.title|truncatechars:16}}</a></h3>
+                                        {% if user == request.user %}
+                                        <p class="mb-0"><a href="{% url 'core:edit-post' post.id%}" class=""> <img width="30" src="https://icons.veryicon.com/png/o/miscellaneous/linear-small-icon/edit-246.png"> </a></p>
+                                        {% endif %}
+
+                                    </div>
                                     <p class="mb-0"><a href="{% url 'core:detail' post.id%}" class="btn btn-black py-2">Read More <span
                                         class="icon-arrow_forward ml-4"></span></a></p>
+                                
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+                    {% else %}
+                        <p class="text-center" style="margin-left: 20px">No results found for '{{search}}'</p>
                     {% endif %}
                     </div>
                 </div>

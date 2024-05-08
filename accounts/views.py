@@ -15,6 +15,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from accounts.tokens import account_activation_token
 from django.core.mail import EmailMessage
+from django.db.models.query import QuerySet
 
 def register(request: HttpRequest):
     categories = Category.objects.all()
@@ -70,10 +71,19 @@ def login_auth(request: HttpRequest):
 
 def profile(request: HttpRequest, id: int):
     user = User.objects.get(id=id)
-    userposts = user.posts.order_by('-id')
+    userposts: QuerySet[Post] = user.posts.order_by('-id')
+    success = True
+    search = request.GET.get('search')
+    if isEmpty(search) or search == "None": search = None
+    if search is not None:
+        search = search.lower()
+        userposts: QuerySet[Post] = [post for post in userposts if search in ' '.join((post.title, post.sub_title)).lower() or search in post.get_tags(case='lower')]
+        if not userposts:
+            success = False
     context = {
         "user": user, "userposts": userposts,
-        'categories': Category.objects.all()
+        "success": success, "search": search,
+        "categories": Category.objects.all()
     }
     return render(request, 'user-profile.html', context=context)
 
